@@ -27,6 +27,7 @@ namespace Evaluator
 
         private void btnEvaluate_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("clicked");
             var value = new double();
             var nums = new Stack<double>();
             var ops = new Stack<Char>();
@@ -34,6 +35,7 @@ namespace Evaluator
             var chars = expression.ToCharArray();
             if (type == "post") {
                 //Goes through every character in the expression
+                Debug.WriteLine("post code will run");
                 foreach (char kar in chars) {
                     //checks for a space
                     if (kar == ' ')
@@ -56,11 +58,14 @@ namespace Evaluator
 
             }
             else if (type == "pre") {
+                Debug.WriteLine("prefix code will run");
                 var stack = new Stack<Char>();
 
             }
             else //Infix
             {
+                Debug.WriteLine("Infix code will run");
+                Debug.WriteLine("Char count: "+ chars.Count());
                 //Goes through every character in the expression
                 foreach (char kar in chars)
                 {
@@ -74,9 +79,11 @@ namespace Evaluator
                     //checks to see if character is a number or an operator
                     {
                         //Number
-                        if (kar >= 0 && kar <= 9)
+                        if (kar >= 48 && kar <= 57)
                         {
+                            //push the character and subtract 48 to get its corresponding integer value
                             nums.Push(kar);
+                            nums.Push(nums.Pop()-48);
                             Debug.WriteLine("pushed number kar to nums value: "+ nums.Peek());
                         }
                         else
@@ -85,18 +92,21 @@ namespace Evaluator
                             if (kar == '+' || kar == '-')
                             {
                                 //
-                                if (ops.Peek() == '*') {
-                                    nums.Push(nums.Pop() * nums.Pop());
+                                if (ops.Count != 0) {
+                                    if (ops.Peek() == '*')
+                                    {
+                                        nums.Push(nums.Pop() * nums.Pop());
+                                    }
+                                    else if (ops.Peek() == '/')
+                                    {
+                                        nums.Push(nums.Pop() / nums.Pop());
+                                    }
                                 }
-                                else if (ops.Peek() == '/')
-                                {
-                                    nums.Push(nums.Pop() / nums.Pop());
-                                }
-                                else
-                                {
-                                    ops.Push(kar);
-                                    Debug.WriteLine("pushed + or - ....  kar was: " + ops.Peek());
-                                }
+                            }
+                            else
+                            {
+                                ops.Push(kar);
+                                Debug.WriteLine("pushed + or - ....  kar was: " + ops.Peek());
                             }
                             // ^
                             else if (kar == '^')
@@ -134,7 +144,7 @@ namespace Evaluator
                                 break;
                         }
                     }
-                    //remaining number is value
+                    //remaining number is value  2 decimals max!
                     value = nums.Pop();
                     lblHead.Text = value.ToString();
                 }
