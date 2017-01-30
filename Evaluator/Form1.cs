@@ -67,10 +67,11 @@ namespace Evaluator
                 Debug.WriteLine("Infix code will run");
                 Debug.WriteLine("Char count: "+ chars.Count());
                 //Goes through every character in the expression
-                foreach (char kar in chars)
+                for (int i = 0; i < chars.Count(); i++)
                 {
+                    Debug.WriteLine("chars iteration: " + i);
                     //checks for a space
-                    if (kar == ' ')
+                    if (chars[i] == ' ')
                     {
                         Debug.WriteLine("space found");
                         continue;
@@ -79,50 +80,69 @@ namespace Evaluator
                     //checks to see if character is a number or an operator
                     {
                         //Number
-                        if (kar >= 48 && kar <= 57)
+                        if (chars[i] >= 48 && chars[i] <= 57)
                         {
+                            Debug.WriteLine("Number character detected");
+                            //check to see if previous char was part of same number
+                            if (nums.Count > 0)
+                            {
+                                if (chars[i - 1] >= 48 && chars[i - 1] <= 57)
+                                {
+                                    double temp = nums.Pop() * 10;
+                                    nums.Push(chars[i]);
+                                    nums.Push((nums.Pop() - 48) + temp);
+                                    Debug.WriteLine("multicharacter number pushed to nums");
+                                    continue;
+                                } //this was for multicharacter numbers
+                            }
                             //push the character and subtract 48 to get its corresponding integer value
-                            nums.Push(kar);
-                            nums.Push(nums.Pop()-48);
-                            Debug.WriteLine("pushed number kar to nums value: "+ nums.Peek());
+                            
+                            nums.Push(chars[i]);
+                            nums.Push(nums.Pop() - 48);
+                            Debug.WriteLine("pushed number kar to nums value: " + nums.Peek());
                         }
                         else
                         //Operator
                         {   // + or -
-                            if (kar == '+' || kar == '-')
+                            if (chars[i] == '+' || chars[i] == '-')
                             {
-                                //
-                                if (ops.Count != 0) {
-                                    if (ops.Peek() == '*')
-                                    {
-                                        nums.Push(nums.Pop() * nums.Pop());
-                                    }
-                                    else if (ops.Peek() == '/')
-                                    {
-                                        nums.Push(nums.Pop() / nums.Pop());
-                                    }
+                                //cant put lower precidence on higher precidence so do those calulations before pushing next operator
+                                if (ops.Count > 0 && ops.Peek() == '*')
+                                {
+                                    nums.Push(nums.Pop() * nums.Pop());
                                 }
-                            }
-                            else
-                            {
-                                ops.Push(kar);
-                                Debug.WriteLine("pushed + or - ....  kar was: " + ops.Peek());
+                                else if (ops.Count > 0 && ops.Peek() == '/')
+                                {
+                                    Double temp = nums.Pop();
+                                    nums.Push(nums.Pop() / temp);
+                                }
+                                else if (ops.Count > 0 && ops.Peek() == '^')
+                                {
+                                    Double temp = nums.Pop();
+                                    nums.Push(Math.Pow(nums.Pop(), temp));
+                                }
+
+                                Debug.WriteLine("pushed + or - ");
                             }
                             // ^
-                            else if (kar == '^')
+                            else if (chars[i] == '^')
                             {
-                                var pwr = nums.Pop();
-                                nums.Push( Math.Pow(nums.Pop(), pwr) );
+                                ops.Push(chars[i]);
                             }
                             // * or /
                             else
                             {
-                                ops.Push(kar);
+                                if (ops.Count > 0 && ops.Peek() == '^') //cant put lower precidence on higher precidence so do those calulations before pushing next operator
+                                {
+                                    Double temp = nums.Pop();
+                                    nums.Push(Math.Pow(nums.Pop(), temp));
+                                }
+                                else { ops.Push(chars[i]); }
                             }
                         }
-                    }//All Characters pushed    
-                
-                    while (ops.Count != 0) {
+                    }
+                }//All Characters pushed  
+                while (ops.Count != 0) {
                         double temp = 0;
                         switch ( ops.Pop() ) {
                             case '-':
@@ -137,9 +157,13 @@ namespace Evaluator
                                 nums.Push(nums.Pop() / temp);
                                 break;
                             case '*':
+                                temp = nums.Pop();
                                 nums.Push(nums.Pop() * temp);
                                 break;
-
+                            case '^':
+                                temp = nums.Pop();
+                                nums.Push(Math.Pow(nums.Pop(), temp));
+                                break;
                             default:
                                 break;
                         }
@@ -147,8 +171,8 @@ namespace Evaluator
                     //remaining number is value  2 decimals max!
                     value = nums.Pop();
                     lblHead.Text = value.ToString();
-                }
-            } 
-        }
-    }
+                } //end infix
+            } //end btnEvaluate 
+        }//end Class
+    
 }
