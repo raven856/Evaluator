@@ -1,6 +1,6 @@
 ﻿namespace Evaluator
 {
-    partial class Form1
+    partial class frmEvaluator
     {
         /// <summary>
         /// Required designer variable.
@@ -36,7 +36,8 @@
             // 
             // btnBack
             // 
-            this.btnBack.Location = new System.Drawing.Point(106, 90);
+            this.btnBack.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnBack.Location = new System.Drawing.Point(102, 90);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(87, 23);
             this.btnBack.TabIndex = 5;
@@ -47,7 +48,7 @@
             // lblHead
             // 
             this.lblHead.AutoSize = true;
-            this.lblHead.Location = new System.Drawing.Point(103, 9);
+            this.lblHead.Location = new System.Drawing.Point(94, 9);
             this.lblHead.Name = "lblHead";
             this.lblHead.Size = new System.Drawing.Size(100, 13);
             this.lblHead.TabIndex = 1;
@@ -55,14 +56,14 @@
             // 
             // txtExpression
             // 
-            this.txtExpression.Location = new System.Drawing.Point(12, 35);
+            this.txtExpression.Location = new System.Drawing.Point(13, 35);
             this.txtExpression.Name = "txtExpression";
             this.txtExpression.Size = new System.Drawing.Size(267, 20);
             this.txtExpression.TabIndex = 1;
             // 
             // btnEvaluate
             // 
-            this.btnEvaluate.Location = new System.Drawing.Point(106, 61);
+            this.btnEvaluate.Location = new System.Drawing.Point(102, 61);
             this.btnEvaluate.Name = "btnEvaluate";
             this.btnEvaluate.Size = new System.Drawing.Size(87, 23);
             this.btnEvaluate.TabIndex = 0;
@@ -70,17 +71,21 @@
             this.btnEvaluate.UseVisualStyleBackColor = true;
             this.btnEvaluate.Click += new System.EventHandler(this.btnEvaluate_Click);
             // 
-            // Form1
+            // frmEvaluator
             // 
+            this.AcceptButton = this.btnEvaluate;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnBack;
             this.ClientSize = new System.Drawing.Size(291, 121);
             this.Controls.Add(this.txtExpression);
             this.Controls.Add(this.lblHead);
             this.Controls.Add(this.btnEvaluate);
             this.Controls.Add(this.btnBack);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "frmEvaluator";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Evaluator";
+            this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
 

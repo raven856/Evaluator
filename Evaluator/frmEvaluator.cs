@@ -11,18 +11,25 @@ using System.Diagnostics;
 namespace Evaluator
 {
 
-    public partial class Form1 : Form
+    public partial class frmEvaluator : Form
     {
         public string type = "in";
 
-        public Form1()
+        public frmEvaluator()
         {
             InitializeComponent();
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            //go back
+            frmChoose choose = new frmChoose();
+            this.Close();
+            //choose.Activate();
+            //choose.ShowDialog();
+            //this.Hide();
+       
+           // this.Close();
+            
         }
 
         private void btnEvaluate_Click(object sender, EventArgs e)
@@ -60,8 +67,67 @@ namespace Evaluator
             else if (type == "pre") {
                 Debug.WriteLine("prefix code will run");
                 var stack = new Stack<Char>();
+                for (int i = (chars.Count() - 1); i >= 0; i--)
+                {
+                    if (chars[i] == ' ')
+                    {
+                        Debug.WriteLine("space found");
+                        continue;
+                    }
+                    else
+                    //checks to see if character is a number or an operator
+                    {
+                        //Number
+                        if (chars[i] >= 48 && chars[i] <= 57)
+                        {
+                            Debug.WriteLine("Number character detected");
+                            //check to see if previous char was part of same number
+                            if (nums.Count > 0)
+                            {
+                                if (chars[i - 1] >= 48 && chars[i - 1] <= 57)
+                                {
+                                    double temp = nums.Pop() * 10;
+                                    nums.Push(chars[i]);
+                                    nums.Push((nums.Pop() - 48) + temp);
+                                    Debug.WriteLine("multicharacter number pushed to nums");
+                                    continue;
+                                } //this was for multicharacter numbers
+                            }
+                            //push the character and subtract 48 to get its corresponding integer value
 
-            }
+                            nums.Push(chars[i]);
+                            nums.Push(nums.Pop() - 48);
+                            Debug.WriteLine("pushed number kar to nums value: " + nums.Peek());
+                        }
+                        else
+                        //Operator
+                        {   // + or -
+                            if (chars[i] == '+')
+                            {
+                                nums.Push(nums.Pop() + nums.Pop());
+                            }
+                            if (chars[i] == '-')
+                            {
+                                nums.Push(nums.Pop() - nums.Pop());
+                            }
+                            if (chars[i] == '*')
+                            {
+                                nums.Push(nums.Pop() * nums.Pop());
+                            }
+                            if (chars[i] == '/')
+                            {
+                                nums.Push(nums.Pop() / nums.Pop());
+                            }
+                            if (chars[i] == '^')
+                            {
+                                nums.Push(Math.Pow(nums.Pop(), nums.Pop()));
+                            }
+                        }
+                    }
+                }
+                value = nums.Pop();
+                lblHead.Text = value.ToString();
+            }//end pre
             else //Infix
             {
                 Debug.WriteLine("Infix code will run");
@@ -109,19 +175,24 @@ namespace Evaluator
                                 //cant put lower precidence on higher precidence so do those calulations before pushing next operator
                                 if (ops.Count > 0 && ops.Peek() == '*')
                                 {
+                                    ops.Pop();
                                     nums.Push(nums.Pop() * nums.Pop());
                                 }
                                 else if (ops.Count > 0 && ops.Peek() == '/')
                                 {
+                                    ops.Pop();
                                     Double temp = nums.Pop();
                                     nums.Push(nums.Pop() / temp);
                                 }
                                 else if (ops.Count > 0 && ops.Peek() == '^')
                                 {
+                                    ops.Pop();
                                     Double temp = nums.Pop();
                                     nums.Push(Math.Pow(nums.Pop(), temp));
                                 }
-
+                              
+                                ops.Push(chars[i]);
+                                
                                 Debug.WriteLine("pushed + or - ");
                             }
                             // ^
@@ -143,31 +214,34 @@ namespace Evaluator
                     }
                 }//All Characters pushed  
                 while (ops.Count != 0) {
-                        double temp = 0;
-                        switch ( ops.Pop() ) {
-                            case '-':
+                     double temp = 0;
+                    Debug.WriteLine("ops.Peek(): " + ops.Peek());
+                    switch ( ops.Pop() ) {
+                          case '-':
+                            temp = nums.Pop();
+                            nums.Push(nums.Pop() - temp);
+                            break;
+                          case '+':
+                               nums.Push(nums.Pop() + nums.Pop());
+                               break;
+                         case '/':
+                             temp = nums.Pop();
+                             nums.Push(nums.Pop() / temp);
+                             break;
+                          case '*':
                                 temp = nums.Pop();
-                                nums.Push(nums.Pop() - temp);
-                                break;
-                            case '+':
-                                nums.Push(nums.Pop() + nums.Pop());
-                                break;
-                            case '/':
-                                temp = nums.Pop();
-                                nums.Push(nums.Pop() / temp);
-                                break;
-                            case '*':
-                                temp = nums.Pop();
-                                nums.Push(nums.Pop() * temp);
-                                break;
-                            case '^':
-                                temp = nums.Pop();
-                                nums.Push(Math.Pow(nums.Pop(), temp));
-                                break;
-                            default:
-                                break;
-                        }
+                            nums.Push(nums.Pop() * temp);
+                            break;
+                         case '^':
+                            temp = nums.Pop();
+                            nums.Push(Math.Pow(nums.Pop(), temp));
+                            break;
+                        default:
+                            break;
                     }
+                }
+ 
+                Debug.WriteLine("nums count: "+nums.Count+"   peek nums: "+nums.Peek());
                     //remaining number is value  2 decimals max!
                     value = nums.Pop();
                     lblHead.Text = value.ToString();
